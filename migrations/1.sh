@@ -164,7 +164,7 @@ install_plymouth_splash () {
   echo "Install Plymouth splash screen"
 
 omarchy-pkg-add uwsm plymouth
-source "$OMARCHY_PATH/install/login/plymouth.sh"
+  source "$OMARCHY_PATH/install/login/plymouth.sh"
 
 }
 
@@ -172,35 +172,37 @@ source "$OMARCHY_PATH/install/login/plymouth.sh"
 install_polkit_gnome (){
   echo "Switching to polkit-gnome for better fingerprint authentication compatibility"
 
-if ! command -v /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &>/dev/null; then
-  sudo pacman -S --noconfirm --needed polkit-gnome
-  systemctl --user stop hyprpolkitagent
-  systemctl --user disable hyprpolkitagent
-  sudo pacman -Rns --noconfirm hyprpolkitagent
-  setsid /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-fi
+  if ! command -v /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &>/dev/null; then
+    sudo pacman -S --noconfirm --needed polkit-gnome
+    systemctl --user stop hyprpolkitagent
+    systemctl --user disable hyprpolkitagent
+    sudo pacman -Rns --noconfirm hyprpolkitagent
+    setsid /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+  fi
 
 }
 
 function migrate_to_modular_hyprlock () {
   echo "Migrate to the modular implementation of hyprlock"
 
-if [ -L ~/.config/hypr/hyprlock.conf ]; then
-  rm ~/.config/hypr/hyprlock.conf
-  cp ~/.local/share/omarchy/config/hypr/hyprlock.conf ~/.config/hypr/hyprlock.conf
-fi
+  if [ -L ~/.config/hypr/hyprlock.conf ]; then
+    rm ~/.config/hypr/hyprlock.conf
+    cp ~/.local/share/omarchy/config/hypr/hyprlock.conf ~/.config/hypr/hyprlock.conf
+  fi
 }
 
 function enable_battery_notifications () {
   echo "Enable battery low notifications for laptops"
 
-if ls /sys/class/power_supply/BAT* &>/dev/null && [[ ! -f ~/.local/share/omarchy/config/systemd/user/omarchy-battery-monitor.service ]]; then
-  mkdir -p ~/.config/systemd/user
+  if ls /sys/class/power_supply/BAT* &>/dev/null && [[ ! -f ~/.local/share/omarchy/config/systemd/user/omarchy-battery-monitor.service ]]; then
+    mkdir -p ~/.config/systemd/user
 
-  cp ~/.local/share/omarchy/config/systemd/user/omarchy-battery-monitor.* ~/.config/systemd/user/
+    cp ~/.local/share/omarchy/config/systemd/user/omarchy-battery-monitor.* ~/.config/systemd/user/
 
-  systemctl --user daemon-reload
-  systemctl --user enable --now omarchy-battery-monitor.timer || true
-fi
+    systemctl --user daemon-reload
+    systemctl --user enable --now omarchy-battery-monitor.timer || true
+  fi
 
 }
+
+# TODO:
